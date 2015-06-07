@@ -1,13 +1,14 @@
 from flask.ext.mail import Message
 from app import mail
-from flask import render_template
-from config import ADMINS
 
 def send_email(subject, sender, recipients, text_body, html_body):
     msg = Message(subject, sender=sender, recipients=recipients)
     msg.body = text_body
     msg.html = html_body
     mail.send(msg)
+
+from flask import render_template
+from config import ADMINS
 
 def follower_notification(followed, follower):
     send_email("[microblog] %s is now following you!" % follower.nickname,

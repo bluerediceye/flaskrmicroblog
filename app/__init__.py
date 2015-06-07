@@ -4,9 +4,11 @@ import os
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from config import basedir
+from flask.ext.mail import Mail
 
 app = Flask(__name__)
 app.config.from_object('config')
+mail = Mail(app)
 db = SQLAlchemy(app)
 
 lm = LoginManager()
@@ -41,5 +43,3 @@ if not app.debug and not on_heroku:
     app.logger.addHandler(file_handler)
     app.logger.info('microblog startup')
 
-from flask.ext.mail import Mail
-mail = Mail(app)
