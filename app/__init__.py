@@ -21,7 +21,7 @@ on_heroku = False
 if os.environ['DEPLOYMENT_ENV'] == 'heroku':
     on_heroku = True
 
-if not app.debug and on_heroku:
+if not app.debug and not on_heroku:
     import logging
     from logging.handlers import SMTPHandler
     credentials = None
