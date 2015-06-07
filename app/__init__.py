@@ -31,7 +31,7 @@ if not app.debug and not on_heroku:
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
-if not app.debug and on_heroku:
+if not app.debug and not on_heroku:
     import logging
     from logging.handlers import RotatingFileHandler
     file_handler = RotatingFileHandler('tmp/microblog.log', 'a', 1 * 1024 * 1024, 10)
