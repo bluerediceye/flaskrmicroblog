@@ -17,7 +17,11 @@ oid = OpenID(app, os.path.join(basedir, 'tmp'))
 from app import views, models
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 
-if not app.debug:
+on_heroku = False
+if os.environ['DEPLOYMENT_ENV'] == 'heroku':
+    on_heroku = True
+
+if not app.debug and on_heroku:
     import logging
     from logging.handlers import SMTPHandler
     credentials = None
@@ -27,7 +31,7 @@ if not app.debug:
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
-if not app.debug:
+if not app.debug and on_heroku:
     import logging
     from logging.handlers import RotatingFileHandler
     file_handler = RotatingFileHandler('tmp/microblog.log', 'a', 1 * 1024 * 1024, 10)
