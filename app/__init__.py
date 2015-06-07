@@ -15,10 +15,10 @@ lm.login_view='login'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
 from app import views, models
-from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
+from config import ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 
 on_heroku = False
-if os.environ['DEPLOYMENT_ENV'] == 'heroku':
+if not os.environ.get('DEPLOYMENT_ENV') is None and os.environ['DEPLOYMENT_ENV'] == 'heroku':
     on_heroku = True
 
 if not app.debug and not on_heroku:
@@ -40,3 +40,6 @@ if not app.debug and not on_heroku:
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
     app.logger.info('microblog startup')
+
+from flask.ext.mail import Mail
+mail = Mail(app)
