@@ -75,6 +75,9 @@ class User(db.Model):
             version += 1
         return new_nickname
 
+    def sorted_posts(self):
+        return Post.query.filter(Post.user_id == self.id).order_by(Post.timestamp.desc())
+
     def __repr__(self):
         return '<User %r>' % (self.nickname)
 
