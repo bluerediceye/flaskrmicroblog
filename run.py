@@ -1,3 +1,6 @@
 #!venv/bin/python
+import os
 from app import app
-app.run(debug = False)
+
+DEBUG = os.environ.get("DEBUG", False)
+app.run(debug = DEBUG)
