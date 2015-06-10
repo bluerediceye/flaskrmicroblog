@@ -1,5 +1,8 @@
+# coding=utf-8
 import os
-
+# microsoft translation service
+MS_TRANSLATOR_CLIENT_ID = 'microblogmli' # enter your MS translator app id here
+MS_TRANSLATOR_CLIENT_SECRET = 'cx9DV4QWohpRTqA/NtYMvuDVxliHzx9hX0FRMcQdGqQ=' # enter your MS translator app secret here
 CSRF_ENABLED = True
 SECRET_KEY = 'you-will-never-guess'
 
@@ -39,3 +42,12 @@ MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
 # administrator list
 ADMINS = ['li.mingxyz@gmail.com']
+
+# -*- coding: utf-8 -*-
+# ...
+# available languages
+LANGUAGES = {
+    'en': 'English',
+    'es': 'Español'
+}
+

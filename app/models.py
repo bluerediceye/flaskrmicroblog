@@ -1,3 +1,4 @@
+import re
 from app import db, app
 from hashlib import md5
 import sys
@@ -75,6 +76,10 @@ class User(db.Model):
             version += 1
         return new_nickname
 
+    @staticmethod
+    def make_valid_nickname(nickname):
+        return re.sub('[^a-zA-Z0-9_\.]', '', nickname)
+
     def sorted_posts(self):
         return Post.query.filter(Post.user_id == self.id).order_by(Post.timestamp.desc())
 
@@ -88,6 +93,7 @@ class Post(db.Model):
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    language = db.Column(db.String(5))
 
     def __repr__(self):
         return '<Post %r>' % (self.body)

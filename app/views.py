@@ -4,8 +4,12 @@ from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
+from flask_babel import gettext
 from .forms import LoginForm, PostForm, SearchForm
 from .models import User, Post
+from guess_language import guessLanguage
+from flask import jsonify
+from translate import microsoft_translate
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -14,10 +18,16 @@ from .models import User, Post
 def index(page=1):
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(body=form.post.data, timestamp=datetime.utcnow(), author=g.user)
+        language = guessLanguage(form.post.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        post = Post(body=form.post.data,
+                    timestamp=datetime.utcnow(),
+                    author=g.user,
+                    language=language)
         db.session.add(post)
         db.session.commit()
-        flash('Your post is now live!')
+        flash(gettext('Your post is now live!'))
         return redirect(url_for('index'))
 
     posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False)
@@ -39,6 +49,7 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
         g.search_form = SearchForm()
+    g.locale = get_locale()
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -59,13 +70,14 @@ def login():
 @oid.after_login
 def after_login(resp):
     if resp.email is None or resp.email == "":
-        flash('Invalid login. Please try again.')
+        flash(gettext('Invalid login. Please try again.'))
         return redirect(url_for('login'))
     user = User.query.filter_by(email=resp.email).first()
     if user is None:
         nickname = resp.nickname
         if nickname is None or nickname == "":
             nickname = resp.email.split('@')[0]
+        nickname = User.make_valid_nickname(nickname)
         nickname = User.make_unique_nickname(nickname)
         user = User(nickname = nickname, email = resp.email)
         db.session.add(user)
@@ -170,6 +182,15 @@ def search_results(query):
                            query=query,
                            results=results)
 
+@app.route('/translate', methods=['POST'])
+@login_required
+def translate():
+    return jsonify({
+        'text': microsoft_translate(
+            request.form['text'],
+            request.form['sourceLang'],
+            request.form['destLang']) })
+
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404
@@ -178,3 +199,9 @@ def not_found_error(error):
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
+
+from app import babel
+from config import LANGUAGES
+@babel.localeselector
+def get_locale():
+    return 'es' #request.accept_languages.best_match(LANGUAGES.keys())

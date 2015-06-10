@@ -1,5 +1,7 @@
 #!venv/bin/python
+# coding=utf-8
 from datetime import datetime, timedelta
+from app.translate import microsoft_translate
 import os
 import unittest
 
@@ -111,6 +113,10 @@ class TestCase(unittest.TestCase):
         assert f2 == [p3, p2]
         assert f3 == [p4, p3]
         assert f4 == [p4]
+
+    def test_translation(self):
+        assert microsoft_translate(u'English', 'en', 'es') == u'Inglés'
+        assert microsoft_translate(u'Español', 'es', 'en') == u'Spanish'
 
 if __name__ == '__main__':
     unittest.main()
