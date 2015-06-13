@@ -29,3 +29,4 @@ sqlalchemy-migrate==0.9.6
 sqlparse==0.1.15
 wsgiref==0.1.2
 wtf==0.1
+guess-language=0.2
